@@ -1,8 +1,6 @@
 package autotests.clients;
 
 import autotests.EndpointConfig;
-import autotests.payloads.Duck;
-import autotests.payloads.DuckProperties;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.http.client.HttpClient;
 import com.consol.citrus.message.MessageType;
@@ -72,33 +70,33 @@ public class DuckClient extends TestNGCitrusSpringSupport {
         );
     }
    @Description("Валидация полученного ответа для метода удаления уточки с передачей ожидаемого тела строкой")
-    public void validateResponseOfDeleteDuck(TestCaseRunner runner) {
+    public void validateResponseOfDeleteDuck(TestCaseRunner runner, String text) {
         runner.$(http()
                 .client(yellowDuckService)
                 .receive()
                 .response(HttpStatus.OK)
                 .message()
                 .type(MessageType.JSON)
-                .body("\"message\": \"Duck is deleted\""));
+                .body(text));
     }
     @Description("Валидация полученного ответа для метода создания уточки с передачей ожидаемого тела из папки resources")
-    public void validateResponseOfCreateDuck(TestCaseRunner runner) {
+    public void validateResponseOfCreateDuck(TestCaseRunner runner, String expectedPayload) {
         runner.$(http()
                 .client(yellowDuckService)
                 .receive()
                 .response(HttpStatus.OK)
                 .message()
                 .type(MessageType.JSON)
-                .body(new ClassPathResource("getCreateDuckTest\\duckYellowCreate.json")));
+                .body(new ClassPathResource(expectedPayload)));
     }
     @Description("Валидация полученного ответа для метода обновления характеристик уточки с передачей ожидаемого тела из папки Payload")
-    public void validateResponseOfUpdateDuck(TestCaseRunner runner, Duck duckUpdate) {
+    public void validateResponseOfUpdateDuck(TestCaseRunner runner, Object expectedPayload) {
         runner.$(http()
                 .client(yellowDuckService)
                 .receive()
                 .response(HttpStatus.OK)
                 .message()
                 .type(MessageType.JSON)
-                .body(new ObjectMappingPayloadBuilder(duckUpdate, new ObjectMapper())));
+                .body(new ObjectMappingPayloadBuilder(expectedPayload, new ObjectMapper())));
     }
 }

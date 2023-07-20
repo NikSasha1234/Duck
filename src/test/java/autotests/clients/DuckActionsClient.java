@@ -1,7 +1,6 @@
 package autotests.clients;
 
 import autotests.EndpointConfig;
-import autotests.payloads.DuckProperties;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.http.client.HttpClient;
 import com.consol.citrus.message.MessageType;
@@ -63,36 +62,34 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
     }
 
     @Description("Валидация полученного ответа для метода, заставляющего уточку лететь, с передачей ожидаемого тела строкой")
-    public void validateResponseOfDuckFly(TestCaseRunner runner) {
+    public void validateResponseOfDuckFly(TestCaseRunner runner, String text) {
         runner.$(http()
                 .client(yellowDuckService)
                 .receive()
                 .response(HttpStatus.OK)
                 .message()
                 .type(MessageType.JSON)
-                .body("{\n" +
-                        "  \"message\": \"I am flying :)\"\n" +
-                        "}"));
+                .body(text));
     }
     @Description("Валидация полученного ответа для метода, заставляющего уточку крякать, с передачей ожидаемого тела из папки resources")
-    public void validateResponseOfDuckQuack(TestCaseRunner runner) {
+    public void validateResponseOfDuckQuack(TestCaseRunner runner, String expectedPayload) {
         runner.$(http()
                 .client(yellowDuckService)
                 .receive()
                 .response(HttpStatus.OK)
                 .message()
                 .type(MessageType.JSON)
-                .body(new ClassPathResource("getDuckQuackTest\\duckYellowQuack.json")));
+                .body(new ClassPathResource(expectedPayload)));
     }
     @Description("Валидация полученного ответа для метода, показывающего характеристики уточки, с передачей ожидаемого тела из папки Payload")
-    public void validateResponseOfDuckProperties(TestCaseRunner runner, DuckProperties duckProperties) {
+    public void validateResponseOfDuckProperties(TestCaseRunner runner, Object expectedPayload) {
         runner.$(http()
                 .client(yellowDuckService)
                 .receive()
                 .response(HttpStatus.OK)
                 .message()
                 .type(MessageType.JSON)
-                .body(new ObjectMappingPayloadBuilder(duckProperties, new ObjectMapper())));
+                .body(new ObjectMappingPayloadBuilder(expectedPayload, new ObjectMapper())));
     }
 
 }

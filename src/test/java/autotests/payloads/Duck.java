@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 @JsonInclude(JsonInclude.Include.NON_NULL) //игнорирование свойств объекта равных null
 public class Duck {
     @JsonProperty
-    private int id;
+    private Integer id;
 
     @JsonProperty
     private String color;
