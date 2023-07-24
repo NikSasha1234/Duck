@@ -1,44 +1,67 @@
 package autotests.clients;
 
-import autotests.EndpointConfig;
+import autotests.BaseTest;
 import com.consol.citrus.TestCaseRunner;
-import com.consol.citrus.http.client.HttpClient;
-import com.consol.citrus.message.MessageType;
-import com.consol.citrus.message.builder.ObjectMappingPayloadBuilder;
-import com.consol.citrus.testng.spring.TestNGCitrusSpringSupport;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.consol.citrus.dsl.JsonPathSupport;
 import org.springframework.context.annotation.Description;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
-@ContextConfiguration(classes = {EndpointConfig.class})
+public class DuckActionsClient extends BaseTest {
 
-public class DuckActionsClient extends TestNGCitrusSpringSupport {
+    @Description("Эндпоинт, создающий уточку")
+    public void createDuckString(TestCaseRunner runner, String body) {
+        sendPostRequestString(runner, yellowDuckService, "/api/duck/create", body);
+    }
 
-    @Autowired
-    protected HttpClient yellowDuckService;
+    @Description("Метод отправки запроса на создание уточки с использованием файла в папке resources")
+    public void createDuckResources(TestCaseRunner runner, String body) {
+        sendPostRequestResources(runner, yellowDuckService, "/api/duck/create", body);
+    }
+
+    @Description("Метод отправки запроса на создание уточки с использованием файла в папке resources")
+    public void createDuckPayload(TestCaseRunner runner, Object body) {
+        sendPostRequestPayload(runner, yellowDuckService, "/api/duck/create", body);
+    }
+
+    @Description("Валидация полученного ответа с передачей ожидаемого тела строкой")
+    public void validateResponseStr(TestCaseRunner runner, String body, HttpStatus status) {
+        validateResponseString(runner, yellowDuckService, body, status);
+    }
+
+    @Description("Валидация полученного ответа с передачей ожидаемого тела из папки resources")
+    public void validateResponseRes(TestCaseRunner runner, String body, HttpStatus status) {
+        validateResponseResources(runner, yellowDuckService, body, status);
+    }
+
+    @Description("Валидация полученного ответа с передачей ожидаемого тела из папки payload")
+    public void validateResponsePay(TestCaseRunner runner, Object body, HttpStatus status) {
+        validateResponsePayload(runner, yellowDuckService, body, status);
+    }
+
+    @Description("Валидация по JsonPath")
+    public void validateResponseJP(TestCaseRunner runner, JsonPathSupport body, HttpStatus status) {
+        validateResponseJsonPath(runner, yellowDuckService, body, status);
+    }
 
     @Description("Эндпоинт, заставляющий уточку лететь")
     public void duckFly(TestCaseRunner runner, String id) {
-        runner.$(http()
-                .client(yellowDuckService)
-                .send()
-                .get("/api/duck/action/fly")
-                .queryParam("id", id));
+        sendGetRequestWithParam(runner, yellowDuckService, "/api/duck/action/fly", "id", id);
     }
 
     @Description("Эндпоинт, показывающий характеристики уточки")
     public void duckProperties(TestCaseRunner runner, String id) {
-        runner.$(http()
-                .client(yellowDuckService)
-                .send()
-                .get("/api/duck/action/properties")
-                .queryParam("id", id));
+        sendGetRequestWithParam(runner, yellowDuckService, "/api/duck/action/properties", "id", id);
+    }
+
+    @Description("Эндпоинт, заставляющий уточку плыть")
+    public void duckSwim(TestCaseRunner runner, String id) {
+        sendGetRequestWithParam(runner, yellowDuckService, "/api/duck/action/swim", "id", id);
+    }
+
+    @Description("Эндпоинт, получающий id уточки")
+    public void duckIdExtract(TestCaseRunner runner) {
+        receiveDuckId(runner, yellowDuckService, HttpStatus.OK, "$.id", "duckId");
     }
 
     @Description("Эндпоинт, заставляющий уточку крякать")
@@ -51,45 +74,4 @@ public class DuckActionsClient extends TestNGCitrusSpringSupport {
                 .queryParam("repetitionCount", repetitionCount)
                 .queryParam("soundCount", soundCount));
     }
-
-    @Description("Эндпоинт, заставляющий уточку плыть")
-    public void duckSwim(TestCaseRunner runner, String id) {
-        runner.$(http()
-                .client(yellowDuckService)
-                .send()
-                .get("/api/duck/action/swim")
-                .queryParam("id", id));
-    }
-
-    @Description("Валидация полученного ответа для метода, заставляющего уточку лететь, с передачей ожидаемого тела строкой")
-    public void validateResponseOfDuckFly(TestCaseRunner runner, String text) {
-        runner.$(http()
-                .client(yellowDuckService)
-                .receive()
-                .response(HttpStatus.OK)
-                .message()
-                .type(MessageType.JSON)
-                .body(text));
-    }
-    @Description("Валидация полученного ответа для метода, заставляющего уточку крякать, с передачей ожидаемого тела из папки resources")
-    public void validateResponseOfDuckQuack(TestCaseRunner runner, String expectedPayload) {
-        runner.$(http()
-                .client(yellowDuckService)
-                .receive()
-                .response(HttpStatus.OK)
-                .message()
-                .type(MessageType.JSON)
-                .body(new ClassPathResource(expectedPayload)));
-    }
-    @Description("Валидация полученного ответа для метода, показывающего характеристики уточки, с передачей ожидаемого тела из папки Payload")
-    public void validateResponseOfDuckProperties(TestCaseRunner runner, Object expectedPayload) {
-        runner.$(http()
-                .client(yellowDuckService)
-                .receive()
-                .response(HttpStatus.OK)
-                .message()
-                .type(MessageType.JSON)
-                .body(new ObjectMappingPayloadBuilder(expectedPayload, new ObjectMapper())));
-    }
-
 }
