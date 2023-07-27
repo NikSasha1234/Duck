@@ -19,34 +19,21 @@ public class DuckCreateTest extends DuckClient {
     Duck duck5 = new Duck().color("RED").height(0.5).material("STEEL").sound("").wingsState("FIXED");
     Duck duck6 = new Duck().color("bright-yellow").height(100.0).material("man-made fibres").sound("quack-quack").wingsState("ACTIVE");
 
-    @Test(dataProvider = "duckList1")
+    @Test(dataProvider = "duckList")
     @CitrusTest
     @CitrusParameters({"payload", "response", "HttpStatus", "runner"})
-    public void createDuckList1(Object payload, String response, HttpStatus status, @Optional @CitrusResource TestCaseRunner runner) {
+    public void createDuckList(Object payload, String response, HttpStatus status, @Optional @CitrusResource TestCaseRunner runner) {
         createDuckPayload(runner, payload);
         validateResponseRes(runner, response, status);
     }
-    @DataProvider(name = "duckList1")
-    public Object[][] DataProvider1() {
+    @DataProvider(name = "duckList")
+    public Object[][] DataProvider() {
         return new Object[][]{
                 {duck1, "getCreateDuckTest/CreateYellowDuck.json", HttpStatus.OK, null},
                 {duck2, "getCreateDuckTest/CreateYellowDuck.json", HttpStatus.OK, null},
                 {duck3, "getCreateDuckTest/CreateLightGreenDuck.json", HttpStatus.OK, null},
                 {duck4, "getCreateDuckTest/CreateEmptyColorDuck.json", HttpStatus.OK, null},
-                {duck5, "getCreateDuckTest/CreateRedDuck.json", HttpStatus.OK, null}
-        };
-    }
-    //Проверка, что при значении sound != "quack" || "" получаем BAD_REQUEST
-    @Test(dataProvider = "duckList2")
-    @CitrusTest
-    @CitrusParameters({"payload", "response", "runner", "HttpStatus"})
-    public void createDuckList2(Object payload, String response, HttpStatus status, @Optional @CitrusResource TestCaseRunner runner) {
-        createDuckPayload(runner, payload);
-        validateResponseRes(runner, response, status);
-    }
-    @DataProvider(name = "duckList2")
-    public Object[][] DataProvider2() {
-        return new Object[][]{
+                {duck5, "getCreateDuckTest/CreateRedDuck.json", HttpStatus.OK, null},
                 {duck6, "getCreateDuckTest/CreateBrightYellowDuck.json", HttpStatus.BAD_REQUEST, null}
         };
     }

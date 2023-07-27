@@ -5,6 +5,9 @@ import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.dsl.JsonPathSupport;
 import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
+
+import static com.consol.citrus.actions.ExecuteSQLAction.Builder.sql;
+import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
 public class DuckActionsClient extends BaseTest {
@@ -58,12 +61,6 @@ public class DuckActionsClient extends BaseTest {
     public void duckSwim(TestCaseRunner runner, String id) {
         sendGetRequestWithParam(runner, yellowDuckService, "/api/duck/action/swim", "id", id);
     }
-
-    @Description("Эндпоинт, получающий id уточки")
-    public void duckIdExtract(TestCaseRunner runner) {
-        receiveDuckId(runner, yellowDuckService, HttpStatus.OK, "$.id", "duckId");
-    }
-
     @Description("Эндпоинт, заставляющий уточку крякать")
     public void duckQuack(TestCaseRunner runner, String id, String repetitionCount, String soundCount) {
         runner.$(http()
@@ -73,5 +70,13 @@ public class DuckActionsClient extends BaseTest {
                 .queryParam("id", id)
                 .queryParam("repetitionCount", repetitionCount)
                 .queryParam("soundCount", soundCount));
+    }
+    @Description("Эндпоинт, получающий id уточки")
+    public void duckIdExtract(TestCaseRunner runner) {
+        receiveDuckId(runner, yellowDuckService, HttpStatus.OK, "$.id", "duckId");
+    }
+    @Description("Эндпоинт, удаляющий уточку в блоке Finally")
+    public void deleteDuckFinal(TestCaseRunner runner, String id) {
+        deleteDuckFinally(runner, yellowDuckService, "/api/duck/delete", id);
     }
 }

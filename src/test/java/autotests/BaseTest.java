@@ -11,10 +11,14 @@ import org.springframework.context.annotation.Description;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.context.ContextConfiguration;
 import com.consol.citrus.http.client.HttpClient;
 import autotests.EndpointConfig;
 
+import static com.consol.citrus.actions.ExecuteSQLAction.Builder.sql;
+import static com.consol.citrus.actions.ExecuteSQLQueryAction.Builder.query;
+import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
 import static com.consol.citrus.dsl.MessageSupport.MessageBodySupport.fromBody;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
@@ -23,6 +27,13 @@ import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 public class BaseTest extends TestNGCitrusSpringSupport {
     @Autowired
     protected HttpClient yellowDuckService;
+
+    protected void deleteDuckFinally(TestCaseRunner runner, HttpClient URL, String path, String id) {
+        runner.$(doFinally().actions(http().client(URL)
+                .send()
+                .delete(path)
+                .queryParam("id", id)));
+    }
 
     protected void sendGetRequestWithParam(TestCaseRunner runner, HttpClient URL, String path, String nameQueryParam, String valueQueryParam) {
         runner.$(http()

@@ -49,6 +49,10 @@ public class DuckClient extends BaseTest {
     public void deleteDuck(TestCaseRunner runner, String id) {
         sendDeleteRequest(runner, yellowDuckService, "/api/duck/delete", "id", id);
     }
+    @Description("Эндпоинт, удаляющий уточку в блоке Finally")
+    public void deleteDuckFinal(TestCaseRunner runner, String id) {
+        deleteDuckFinally(runner, yellowDuckService, "/api/duck/delete", id);
+    }
 
     @Description("Эндпоинт для получения списка id всех уточек")
     public void listDuckId(TestCaseRunner runner) {
@@ -74,4 +78,5 @@ public class DuckClient extends BaseTest {
     public void duckIdExtract(TestCaseRunner runner) {
         receiveDuckId(runner, yellowDuckService, HttpStatus.OK, "$.id", "duckId");
     }
+
 }
