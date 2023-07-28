@@ -27,7 +27,25 @@ import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 public class BaseTest extends TestNGCitrusSpringSupport {
     @Autowired
     protected HttpClient yellowDuckService;
+    @Autowired
+    protected SingleConnectionDataSource testDb;
 
+    protected void databaseSQL(TestCaseRunner runner, String sql) {
+        runner.$(sql(testDb).statement(sql));
+    }
+
+    protected void validateDuckInDatabase(TestCaseRunner runner, String id, String color, String height, String material, String sound, String wingsState) {
+        runner.$(query(testDb)
+                .statement("select * from duck where ID = " + id + ";")
+                .validate("COLOR", color)
+                .validate("HEIGHT", height)
+                .validate("MATERIAL", material)
+                .validate("SOUND", sound)
+                .validate("WINGS_STATE", wingsState));
+    }
+    protected void deleteDuckFinally(TestCaseRunner runner, String sql) {
+        runner.$(doFinally().actions(runner.$(sql(testDb).statement(sql))));
+    }
     protected void deleteDuckFinally(TestCaseRunner runner, HttpClient URL, String path, String id) {
         runner.$(doFinally().actions(http().client(URL)
                 .send()
@@ -125,6 +143,12 @@ public class BaseTest extends TestNGCitrusSpringSupport {
                 .message()
                 .type(MessageType.JSON)
                 .validate(body));
+    }
+    protected void receiveListDuckId (TestCaseRunner runner, HttpClient URL, HttpStatus status){
+        runner.$(http().client(yellowDuckService)
+                .receive()
+                .response(HttpStatus.OK)
+                .message());
     }
 
     protected void receiveDuckId(TestCaseRunner runner, HttpClient URL, HttpStatus status, String pathValue, String variableName) {

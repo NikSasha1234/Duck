@@ -27,7 +27,7 @@ public class DuckClient extends BaseTest {
 
     @Description("Валидация полученного ответа с передачей ожидаемого тела строкой")
     public void validateResponseStr(TestCaseRunner runner, String body, HttpStatus status) {
-        validateResponseResources(runner, yellowDuckService, body, status);
+        validateResponseString(runner, yellowDuckService, body, status);
     }
 
     @Description("Валидация полученного ответа с передачей ожидаемого тела из папки resources")
