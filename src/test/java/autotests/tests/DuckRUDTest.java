@@ -6,23 +6,34 @@ import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
 import com.consol.citrus.context.TestContext;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Flaky;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 
+@Epic("Тестовый класс с действиями из duck-controller")
 public class DuckRUDTest extends DuckClient {
 
-    // Пробовала сделать по-другому, чтобы не передавать в теле ответ, ничего не сработало. Тест получился "одноразовый". Оставила так.
+    @Description("Проверка получения списка id уточек из пустой БД")
     @CitrusTest
-    @Test(description = "Проверка вывода списка id уточек из пустой БД", priority = 0)
+    @Test(description = "Метод запроса: GET; Действие: getAllIds", priority = 0)
     public void successfulListDuckId1(@Optional @CitrusResource TestCaseRunner runner) {
+        // Очистка БД
+        deleteDuckFinally(runner, "delete from duck");
+
         listDuckId(runner);
         validateResponsePay(runner, "[]", HttpStatus.OK);
     }
 
+    @Description("Проверка получения списка id уточек с 1 уточкой")
     @CitrusTest
-    @Test(description = "Проверка вывода списка id уточек с 1 уточкой", priority = 0)
+    @Test(description = "Метод запроса: GET; Действие: getAllIds", priority = 0)
     public void successfulListDuckId2(@Optional @CitrusResource TestCaseRunner runner) {
+        // Очистка БД
+        deleteDuckFinally(runner, "delete from duck");
+
         deleteDuckFinal(runner, "${duckId}");
 
         createDuckString(runner, "{\n" +
@@ -37,9 +48,13 @@ public class DuckRUDTest extends DuckClient {
         validateResponsePay(runner, "[\n" + "  ${duckId}\n" + "]", HttpStatus.OK);
     }
 
+    @Description("Проверка получения списка id уточек с 2 уточками")
     @CitrusTest
-    @Test(description = "Проверка вывода списка id уточек с 2 уточками", priority = 0)
+    @Test(description = "Метод запроса: GET; Действие: getAllIds", priority = 0)
     public void successfulListDuckId3(@Optional @CitrusResource TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
+        // Очистка БД
+        deleteDuckFinally(runner, "delete from duck");
+
         deleteDuckFinal(runner, "${id1}");
         deleteDuckFinal(runner, "${id2}");
 
@@ -64,8 +79,9 @@ public class DuckRUDTest extends DuckClient {
                 "]", HttpStatus.OK);
     }
 
+    @Description("Проверка обновления уточки")
     @CitrusTest
-    @Test(description = "Проверка обновления характиристик уточки", priority = 1)
+    @Test(description = "Метод запроса: PUT; Действие: update", priority = 1)
     public void successfulUpdate1(@Optional @CitrusResource TestCaseRunner runner) {
         Message message = new Message().message("Duck with id = " + "${duckId}" + " is updated");
 
@@ -77,8 +93,10 @@ public class DuckRUDTest extends DuckClient {
         validateResponsePay(runner, message, HttpStatus.OK);
     }
 
+    @Description("Проверка обновления характиристик уточки с установкой недопустимого значения поля sound")
     @CitrusTest
-    @Test(description = "Проверка обновления характиристик уточки с установкой недопустимого значения поля sound", priority = 1)
+    @Test(description = "Метод запроса: PUT; Действие: update", priority = 1)
+    @Flaky
     public void successfulUpdate2(@Optional @CitrusResource TestCaseRunner runner) {
         Message message = new Message().message("Incorrect sound value");
 
@@ -90,8 +108,9 @@ public class DuckRUDTest extends DuckClient {
         validateResponsePay(runner, message, HttpStatus.BAD_REQUEST);
     }
 
+    @Description("Проверка удаления уточки")
     @CitrusTest
-    @Test(description = "Проверка удаления уточки", priority = 2)
+    @Test(description = "Метод запроса: DELETE; Действие: delete", priority = 2)
     public void successfulDelete(@Optional @CitrusResource TestCaseRunner runner) {
         deleteDuckFinal(runner, "${duckId}");
 
@@ -102,5 +121,4 @@ public class DuckRUDTest extends DuckClient {
                 "  \"message\": \"Duck is deleted\"\n" +
                 "}", HttpStatus.OK);
     }
-
 }

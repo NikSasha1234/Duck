@@ -7,15 +7,19 @@ import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
 import com.consol.citrus.context.TestContext;
 import com.consol.citrus.message.MessageType;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Step;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
 import static com.consol.citrus.dsl.MessageSupport.MessageBodySupport.fromBody;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
-
+@Epic("Тестовый класс с действиями из duck-controller и проверкой записей в БД")
 public class DBDuckCRUDTest extends DuckClient {
+    @Description("Проверка создания уточки")
     @CitrusTest
-    @Test(description = "Проверка создания уточки", enabled = true)
+    @Test(description = "Метод запроса: POST; Действие: create", enabled = true)
     public void createDuckDB(@Optional @CitrusResource TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
         // Очистка БД
          deleteDuckFinally(runner, "delete from duck");
@@ -47,9 +51,9 @@ public class DBDuckCRUDTest extends DuckClient {
         // Валидация созданного объекта в БД
         validateDuckInDatabase(runner, "${duckId}", "${duckColor}", "${duckHeight}", "${duckMaterial}", "${duckSound}", "${duckWings}");
     }
-
+    @Description("Проверка обновления уточки")
     @CitrusTest
-    @Test(description = "Проверка обновления уточки", enabled = true)
+    @Test(description = "Метод запроса: PUT; Действие: update", enabled = true)
     public void updateDuckDB(@Optional @CitrusResource TestCaseRunner runner) {
         Message message = new Message().message("Duck with id = " + "${duckId}" + " is updated");
 
@@ -63,9 +67,9 @@ public class DBDuckCRUDTest extends DuckClient {
         validateDuckInDatabase(runner, "${duckId}", "black", "50.0", "metallic", "quack", "ACTIVE");
         validateResponsePay(runner, message, HttpStatus.OK);
     }
-
+    @Description("Проверка получения списка id уточек с 1 уточкой")
     @CitrusTest
-    @Test(description = "Проверка вывода списка id уточек с 1 уточкой", enabled = true)
+    @Test(description = "Метод запроса: GET; Действие: getAllIds", enabled = true)
     public void listIdDuckDB1(@Optional @CitrusResource TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
         deleteDuckFinally(runner, "delete from duck;");
 
@@ -82,9 +86,9 @@ public class DBDuckCRUDTest extends DuckClient {
                 "  " + id1 + "\n" +
                 "]", HttpStatus.OK);
     }
-
+    @Description("Проверка получения списка id уточек из пустой БД")
     @CitrusTest
-    @Test(description = "Проверка вывода списка id уточек из пустой БД", enabled = true)
+    @Test(description = "Метод запроса: GET; Действие: getAllIds", enabled = true)
     public void listIdDuckDB2(@Optional @CitrusResource TestCaseRunner runner, @Optional @CitrusResource TestContext context) {
         deleteDuckFinally(runner, "delete from duck;");
         listDuckId(runner);
