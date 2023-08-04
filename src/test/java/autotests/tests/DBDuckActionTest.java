@@ -4,13 +4,19 @@ import autotests.clients.DuckActionsClient;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.annotations.CitrusResource;
 import com.consol.citrus.annotations.CitrusTest;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Flaky;
+import io.qameta.allure.Step;
 import org.springframework.http.HttpStatus;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Test;
-
+@Epic("Тестовый класс с действиями из duck-action-controller и проверкой записей в БД")
 public class DBDuckActionTest extends DuckActionsClient {
+    @Description("Проверка способности уточки плыть")
     @CitrusTest
-    @Test(description = "Проверка того, что уточка поплыла", enabled = true)
+    @Test(description = "Метод запроса: GET; Действие: swim", enabled = true)
+    @Flaky
     public void successfulSwim(@Optional @CitrusResource TestCaseRunner runner) {
         deleteDuckFinally(runner, "delete from duck");
 
@@ -20,9 +26,10 @@ public class DBDuckActionTest extends DuckActionsClient {
         duckSwim(runner, "${duckId}");
         validateResponseRes(runner, "getCreateDuckTest\\responseMessageSwim.json", HttpStatus.OK);
     }
-
+    @Description("Проверка способности уточки показывать свойства")
     @CitrusTest
-    @Test(description = "Проверка того, что уточка показывает свойства", enabled = true)
+    @Test(description = "Метод запроса: GET; Действие: properties", enabled = true)
+    @Flaky
     public void successfulProperties(@Optional @CitrusResource TestCaseRunner runner) {
         // Очистка БД
         deleteDuckFinally(runner, "delete from duck");

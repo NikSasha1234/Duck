@@ -3,65 +3,63 @@ package autotests.clients;
 import autotests.BaseTest;
 import com.consol.citrus.TestCaseRunner;
 import com.consol.citrus.dsl.JsonPathSupport;
-import org.springframework.context.annotation.Description;
+import io.qameta.allure.Step;
 import org.springframework.http.HttpStatus;
 
-import static com.consol.citrus.actions.ExecuteSQLAction.Builder.sql;
-import static com.consol.citrus.container.FinallySequence.Builder.doFinally;
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
 public class DuckActionsClient extends BaseTest {
-
-    @Description("Эндпоинт, создающий уточку")
+    @Step("Создание уточки через строку")
     public void createDuckString(TestCaseRunner runner, String body) {
         sendPostRequestString(runner, yellowDuckService, "/api/duck/create", body);
     }
 
-    @Description("Метод отправки запроса на создание уточки с использованием файла в папке resources")
+    @Step("Создание уточки через resources")
     public void createDuckResources(TestCaseRunner runner, String body) {
         sendPostRequestResources(runner, yellowDuckService, "/api/duck/create", body);
     }
 
-    @Description("Метод отправки запроса на создание уточки с использованием файла в папке resources")
+    @Step("Создание уточки через payload")
     public void createDuckPayload(TestCaseRunner runner, Object body) {
         sendPostRequestPayload(runner, yellowDuckService, "/api/duck/create", body);
     }
 
-    @Description("Валидация полученного ответа с передачей ожидаемого тела строкой")
+    @Step("Валидация ответа через строку")
     public void validateResponseStr(TestCaseRunner runner, String body, HttpStatus status) {
         validateResponseString(runner, yellowDuckService, body, status);
     }
 
-    @Description("Валидация полученного ответа с передачей ожидаемого тела из папки resources")
+    @Step("Валидация ответа через resources")
     public void validateResponseRes(TestCaseRunner runner, String body, HttpStatus status) {
         validateResponseResources(runner, yellowDuckService, body, status);
     }
 
-    @Description("Валидация полученного ответа с передачей ожидаемого тела из папки payload")
+    @Step("Валидация ответа через payload")
     public void validateResponsePay(TestCaseRunner runner, Object body, HttpStatus status) {
         validateResponsePayload(runner, yellowDuckService, body, status);
     }
 
-    @Description("Валидация по JsonPath")
+    @Step("Валидация ответа по JsonPath")
     public void validateResponseJP(TestCaseRunner runner, JsonPathSupport body, HttpStatus status) {
         validateResponseJsonPath(runner, yellowDuckService, body, status);
     }
 
-    @Description("Эндпоинт, заставляющий уточку лететь")
+    @Step("Уточка летит")
     public void duckFly(TestCaseRunner runner, String id) {
         sendGetRequestWithParam(runner, yellowDuckService, "/api/duck/action/fly", "id", id);
     }
 
-    @Description("Эндпоинт, показывающий характеристики уточки")
+    @Step("Уточка показывает характеристики")
     public void duckProperties(TestCaseRunner runner, String id) {
         sendGetRequestWithParam(runner, yellowDuckService, "/api/duck/action/properties", "id", id);
     }
 
-    @Description("Эндпоинт, заставляющий уточку плыть")
+    @Step("Уточка плывет")
     public void duckSwim(TestCaseRunner runner, String id) {
         sendGetRequestWithParam(runner, yellowDuckService, "/api/duck/action/swim", "id", id);
     }
-    @Description("Эндпоинт, заставляющий уточку крякать")
+
+    @Step("Уточка крякает")
     public void duckQuack(TestCaseRunner runner, String id, String repetitionCount, String soundCount) {
         runner.$(http()
                 .client(yellowDuckService)
@@ -71,11 +69,13 @@ public class DuckActionsClient extends BaseTest {
                 .queryParam("repetitionCount", repetitionCount)
                 .queryParam("soundCount", soundCount));
     }
-    @Description("Эндпоинт, получающий id уточки")
+
+    @Step("Получение id уточки")
     public void duckIdExtract(TestCaseRunner runner) {
         receiveDuckId(runner, yellowDuckService, HttpStatus.OK, "$.id", "duckId");
     }
-    @Description("Эндпоинт, удаляющий уточку в блоке Finally")
+
+    @Step("Удаление уточки через блок Finally")
     public void deleteDuckFinal(TestCaseRunner runner, String id) {
         deleteDuckFinally(runner, yellowDuckService, "/api/duck/delete", id);
     }
